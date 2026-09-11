@@ -1,5 +1,17 @@
 // Lista de palavras simples
-const palavras = ["JAVASCRIPT", "GITHUB", "CODIGO", "TECLADO", "BROWSER"];
+const palavras = [
+  "COLINA",
+  "GIGANTE",
+  "CRUZMALTINO",
+  "SAOJANUARIO",
+  "CAMISASNEGRAS",
+  "DINAMITE",
+  "CARAVELA",
+  "BACALHAU",
+  "ALVIRRUBRO",
+  "TORCIDA",
+  "FUTEBOL"
+];
 
 let palavraSorteada = "";
 let palavraOculta = [];
