@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Jogo da Forca</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>Jogo da Forca</h1>
+
+    <!-- Exibe os tracinhos da palavra -->
+    <div id="palavra"></div>
+
+    <!-- Campo para digitar uma letra -->
+    <div class="entrada">
+      <input type="text" id="letraInput" maxlength="1" placeholder="Letra">
+      <button id="btnChutar" onclick="chutarLetra()">Chutar</button>
+    </div>
+
+    <!-- Avisos e status -->
+    <p id="mensagem"></p>
+    <p>Tentativas restantes: <span id="tentativas">6</span></p>
+    <p>Letras tentadas: <span id="letrasUsadas"></span></p>
+
+    <!-- Botao de reiniciar -->
+    <button id="btnReiniciar" onclick="iniciarJogo()">Jogar Novamente</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
