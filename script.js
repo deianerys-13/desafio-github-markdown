@@ -8,7 +8,6 @@ const palavras = [
   "DINAMITE",
   "CARAVELA",
   "BACALHAU",
-  "ALVIRRUBRO",
   "TORCIDA",
   "FUTEBOL"
 ];
