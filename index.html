@@ -3,249 +3,540 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jogo de Forca com Palavroo API</title>
+  <title>🎮 Jogo de Forca - Palavroo API</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      margin: 0;
+      padding: 20px;
     }
-    
+
     .container {
       background: white;
       padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      border-radius: 15px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 600px;
+      width: 100%;
       text-align: center;
-      max-width: 500px;
     }
-    
+
     h1 {
       color: #333;
+      margin-bottom: 10px;
+      font-size: 2.5em;
+    }
+
+    .subtitle {
+      color: #888;
+      font-size: 0.9em;
       margin-bottom: 30px;
     }
-    
-    .palavra-display {
-      font-size: 32px;
-      font-weight: bold;
-      letter-spacing: 10px;
-      color: #667eea;
-      margin: 20px 0;
-      font-family: monospace;
-      min-height: 50px;
-    }
-    
-    .stats {
+
+    .stats-container {
       display: flex;
       justify-content: space-around;
-      margin: 20px 0;
+      margin-bottom: 30px;
+      gap: 20px;
+    }
+
+    .stat {
+      flex: 1;
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+    }
+
+    .stat-label {
       color: #666;
+      font-size: 0.9em;
+      margin-bottom: 5px;
     }
-    
-    .stats-item {
-      padding: 10px;
+
+    .stat-value {
+      color: #667eea;
+      font-size: 2em;
+      font-weight: bold;
     }
-    
-    input[type="text"] {
-      padding: 10px;
-      font-size: 16px;
-      width: 100%;
-      max-width: 200px;
-      border: 2px solid #667eea;
-      border-radius: 5px;
-      margin: 10px 0;
+
+    .palavra-display {
+      font-size: 3em;
+      font-weight: bold;
+      letter-spacing: 15px;
+      color: #667eea;
+      margin: 30px 0;
+      font-family: 'Courier New', monospace;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f9f9f9;
+      border-radius: 10px;
+      padding: 20px;
     }
-    
-    button {
-      background: #667eea;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin: 10px;
-    }
-    
-    button:hover {
-      background: #764ba2;
-    }
-    
+
     .letras-erradas {
       margin: 20px 0;
       color: #e74c3c;
-      min-height: 20px;
+      min-height: 30px;
+      font-size: 1.1em;
     }
-    
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"] {
+      padding: 12px 15px;
+      font-size: 1.2em;
+      border: 2px solid #667eea;
+      border-radius: 8px;
+      width: 120px;
+      text-align: center;
+      text-transform: uppercase;
+      transition: all 0.3s;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #764ba2;
+      box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+    }
+
+    button {
+      padding: 12px 25px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .btn-chutar {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-chutar:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-novo {
+      background: #27ae60;
+      color: white;
+    }
+
+    .btn-novo:hover {
+      background: #229954;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+    }
+
     .mensagem {
-      font-size: 20px;
+      font-size: 1.3em;
       font-weight: bold;
       margin: 20px 0;
-      min-height: 30px;
+      min-height: 35px;
+      padding: 10px;
+      border-radius: 8px;
     }
-    
+
     .vitoria {
       color: #27ae60;
+      background: #d5f4e6;
+      border: 2px solid #27ae60;
     }
-    
+
     .derrota {
       color: #e74c3c;
+      background: #fadbd8;
+      border: 2px solid #e74c3c;
+    }
+
+    .carregando {
+      color: #667eea;
+      background: #eef2ff;
+      border: 2px solid #667eea;
+    }
+
+    .debug-info {
+      background: #f0f0f0;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      text-align: left;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85em;
+      color: #333;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .debug-line {
+      padding: 5px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .debug-line:last-child {
+      border-bottom: none;
+    }
+
+    .debug-success {
+      color: #27ae60;
+    }
+
+    .debug-error {
+      color: #e74c3c;
+    }
+
+    .debug-info-label {
+      color: #667eea;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 25px;
+      }
+
+      h1 {
+        font-size: 2em;
+      }
+
+      .palavra-display {
+        font-size: 2em;
+        letter-spacing: 10px;
+      }
+
+      .stats-container {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>🎮 Jogo de Forca</h1>
-    
-    <div class="stats">
-      <div class="stats-item">
-        Tentativas: <strong id="tentativas">6</strong>
+    <p class="subtitle">Com Palavroo API</p>
+
+    <div class="stats-container">
+      <div class="stat">
+        <div class="stat-label">Tentativas Restantes</div>
+        <div class="stat-value" id="tentativas">6</div>
       </div>
-      <div class="stats-item">
-        Acertos: <strong id="acertos">0</strong>
+      <div class="stat">
+        <div class="stat-label">Letras Acertadas</div>
+        <div class="stat-value" id="acertos">0</div>
       </div>
     </div>
-    
+
     <div class="palavra-display" id="palavraDisplay">⏳ Carregando...</div>
-    
+
     <div class="letras-erradas" id="letrasErradas"></div>
-    
-    <input type="text" id="letraInput" placeholder="Digite uma letra" maxlength="1">
-    <button onclick="chutar()">Chutar</button>
-    
+
+    <div class="input-group">
+      <input type="text" id="letraInput" placeholder="A-Z" maxlength="1" autofocus>
+      <button class="btn-chutar" onclick="chutar()">Chutar</button>
+    </div>
+
     <div class="mensagem" id="mensagem"></div>
-    
-    <button onclick="novoJogo()" style="background: #27ae60;">Novo Jogo</button>
+
+    <button class="btn-novo" onclick="novoJogo()">🔄 Novo Jogo</button>
+
+    <div class="debug-info">
+      <div class="debug-info-label">📊 Logs de Debug:</div>
+      <div id="debugLogs"></div>
+    </div>
   </div>
 
-  <!-- Importa as funções da API Palavroo -->
-  <script src="api-palavroo.js"></script>
-
   <script>
-    // Estado do jogo
+    // ============================================
+    // CONFIGURAÇÃO E CONSTANTES
+    // ============================================
+    const API_URL = "https://palavroo-api.vercel.app";
+    const MAX_DEBUG_LINES = 10;
+
+    // Palavras de fallback caso API falhe
+    const palavrasLocal = [
+      "JAVASCRIPT", "PROGRAMAÇÃO", "COMPUTADOR", "DESENVOLVEDOR", "ALGORITMO",
+      "FUNÇÃO", "VARIÁVEL", "CONSTANTE", "ARRAY", "OBJETO",
+      "MÉTODO", "CLASSE", "HERANÇA", "BANCO", "DADOS",
+      "SERVIDOR", "CLIENTE", "REQUISIÇÃO", "RESPOSTA", "PROTOCOLO",
+      "INTERNET", "NAVEGADOR", "APLICAÇÃO", "SOFTWARE", "HARDWARE",
+      "REDE", "SEGURANÇA", "CRIPTOGRAFIA", "AUTENTICAÇÃO", "AUTORIZAÇÃO",
+      "SESSÃO", "COOKIE", "TOKEN", "API", "FRAMEWORK",
+      "BIBLIOTECA", "DEPENDÊNCIA", "VERSÃO", "PACKAGE", "MÓDULO",
+      "COMPONENTE", "ESTADO", "PROPS", "EVENTO", "LISTENER",
+      "CALLBACK", "PROMISE", "ASYNC", "AWAIT", "ERROR"
+    ];
+
+    // ============================================
+    // ESTADO DO JOGO
+    // ============================================
     let jogo = {
       palavra: "",
       tentativas: 6,
       letrasErradas: [],
       letrasAcertadas: [],
       gameOver: false,
-      venceu: false
+      venceu: false,
+      apiUsada: false
     };
-    
-    // Iniciar novo jogo - chama função do api-palavroo.js
+
+    // ============================================
+    // SISTEMA DE DEBUG
+    // ============================================
+    const debugLogs = [];
+
+    function adicionarDebugLog(mensagem, tipo = "info") {
+      const timestamp = new Date().toLocaleTimeString();
+      const log = `[${timestamp}] ${mensagem}`;
+      debugLogs.unshift(log);
+      
+      // Manter apenas os últimos 10 logs
+      if (debugLogs.length > MAX_DEBUG_LINES) {
+        debugLogs.pop();
+      }
+
+      const debugDiv = document.getElementById("debugLogs");
+      debugDiv.innerHTML = debugLogs
+        .map((l, i) => {
+          const classe = l.includes("✅") ? "debug-success" : 
+                        l.includes("❌") || l.includes("erro") ? "debug-error" : "";
+          return `<div class="debug-line ${classe}">${l}</div>`;
+        })
+        .join("");
+
+      console.log(log, tipo);
+    }
+
+    // ============================================
+    // FUNÇÕES DA API PALAVROO
+    // ============================================
+
+    /**
+     * Tenta buscar palavra da API Palavroo
+     * Se falhar, usa fallback com palavras locais
+     */
+    async function pegarPalavraAleatoria() {
+      try {
+        adicionarDebugLog("🔄 Iniciando requisição para Palavroo API...");
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        const response = await fetch(`${API_URL}/random`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        
+        if (!data.palavra) {
+          throw new Error("Resposta da API não contém campo 'palavra'");
+        }
+
+        const palavra = data.palavra.toUpperCase().trim();
+        adicionarDebugLog(`✅ Palavra obtida da API: "${palavra}"`);
+        
+        jogo.apiUsada = true;
+        return palavra;
+
+      } catch (error) {
+        adicionarDebugLog(`❌ Erro na API: ${error.message}`);
+        adicionarDebugLog("📚 Usando palavras locais como fallback...");
+        
+        const palavra = pegarPalavraLocal();
+        jogo.apiUsada = false;
+        return palavra;
+      }
+    }
+
+    /**
+     * Seleciona uma palavra aleatória do array local
+     */
+    function pegarPalavraLocal() {
+      const indice = Math.floor(Math.random() * palavrasLocal.length);
+      const palavra = palavrasLocal[indice];
+      adicionarDebugLog(`📚 Palavra local selecionada: "${palavra}"`);
+      return palavra;
+    }
+
+    // ============================================
+    // CONTROLE DO JOGO
+    // ============================================
+
+    /**
+     * Inicia um novo jogo
+     */
     async function novoJogo() {
       try {
-        console.log("🎮 Iniciando novo jogo...");
-        document.getElementById("palavraDisplay").innerText = "⏳ Carregando palavra...";
-        
-        // Chama a função que busca palavra da API
+        adicionarDebugLog("🎮 Iniciando novo jogo...");
+        document.getElementById("palavraDisplay").innerText = "⏳ Carregando...";
+        document.getElementById("mensagem").innerText = "";
+        document.getElementById("mensagem").className = "mensagem";
+
         const palavra = await pegarPalavraAleatoria();
-        console.log("✅ Palavra carregada:", palavra);
-        
+
+        if (!palavra || palavra.length === 0) {
+          throw new Error("Palavra vazia recebida");
+        }
+
         jogo = {
           palavra: palavra,
           tentativas: 6,
           letrasErradas: [],
           letrasAcertadas: [],
           gameOver: false,
-          venceu: false
+          venceu: false,
+          apiUsada: jogo.apiUsada
         };
-        
+
+        adicionarDebugLog(`✅ Jogo pronto! Palavra: ${palavra.length} letras`);
         atualizarDisplay();
+        
         document.getElementById("letraInput").value = "";
         document.getElementById("letraInput").focus();
-        document.getElementById("mensagem").innerText = "";
-        document.getElementById("mensagem").className = "mensagem";
+        document.getElementById("letraInput").disabled = false;
+
       } catch (error) {
-        console.error("❌ Erro ao iniciar jogo:", error);
-        document.getElementById("palavraDisplay").innerText = "Erro ao carregar!";
+        adicionarDebugLog(`❌ Erro ao iniciar jogo: ${error.message}`);
+        document.getElementById("palavraDisplay").innerText = "❌ Erro ao carregar!";
       }
     }
-    
-    // Atualizar display da palavra e estatísticas
+
+    /**
+     * Atualiza o display visual do jogo
+     */
     function atualizarDisplay() {
-      let display = "";
-      for (let letra of jogo.palavra) {
-        if (jogo.letrasAcertadas.includes(letra)) {
-          display += letra + " ";
-        } else {
-          display += "_ ";
-        }
-      }
+      // Construir display da palavra
+      let display = jogo.palavra
+        .split("")
+        .map(letra => jogo.letrasAcertadas.includes(letra) ? letra : "_")
+        .join(" ");
+
       document.getElementById("palavraDisplay").innerText = display;
       document.getElementById("tentativas").innerText = jogo.tentativas;
       document.getElementById("acertos").innerText = jogo.letrasAcertadas.length;
-      document.getElementById("letrasErradas").innerText = 
-        jogo.letrasErradas.length > 0 ? "❌ Erradas: " + jogo.letrasErradas.join(", ") : "";
+
+      // Mostrar letras erradas
+      if (jogo.letrasErradas.length > 0) {
+        document.getElementById("letrasErradas").innerText =
+          `❌ Erradas: ${jogo.letrasErradas.join(", ")}`;
+      } else {
+        document.getElementById("letrasErradas").innerText = "";
+      }
     }
-    
-    // Processar chute de letra
+
+    /**
+     * Processa o chute de uma letra
+     */
     function chutar() {
-      const input = document.getElementById("letraInput").value.toUpperCase();
-      
+      if (jogo.gameOver) {
+        adicionarDebugLog("⚠️ Jogo já terminou!");
+        return;
+      }
+
+      const input = document.getElementById("letraInput").value.toUpperCase().trim();
+
       // Validações
       if (!input) {
-        alert("Digite uma letra!");
+        adicionarDebugLog("⚠️ Campo vazio - digite uma letra!");
         return;
       }
-      
+
       if (input.length !== 1) {
-        alert("Digite apenas UMA letra!");
+        adicionarDebugLog("⚠️ Digite apenas UMA letra!");
         return;
       }
-      
+
+      if (!/[A-Z]/.test(input)) {
+        adicionarDebugLog("⚠️ Digite apenas letras (A-Z)!");
+        return;
+      }
+
       if (jogo.letrasAcertadas.includes(input) || jogo.letrasErradas.includes(input)) {
-        alert("Você já tentou essa letra!");
+        adicionarDebugLog(`⚠️ Letra "${input}" já foi tentada!`);
         return;
       }
-      
-      if (jogo.gameOver) {
-        alert("Jogo acabou! Clique em 'Novo Jogo'");
-        return;
-      }
-      
-      // Verificar se acertou a letra
+
+      // Processar chute
       if (jogo.palavra.includes(input)) {
         jogo.letrasAcertadas.push(input);
-        console.log("✅ Letra correta:", input);
-        
-        // Verificar se venceu (adivinhou todas as letras)
+        adicionarDebugLog(`✅ Letra "${input}" correta!`);
+
+        // Verificar vitória
         if (jogo.palavra.split("").every(l => jogo.letrasAcertadas.includes(l))) {
           jogo.venceu = true;
           jogo.gameOver = true;
           document.getElementById("mensagem").innerText = "🎉 Você Venceu!";
           document.getElementById("mensagem").classList.add("vitoria");
+          adicionarDebugLog("🎉 VITÓRIA! Palavra descoberta!");
         }
       } else {
-        // Letra errada
         jogo.letrasErradas.push(input);
         jogo.tentativas--;
-        console.log("❌ Letra errada:", input);
-        
-        // Verificar se perdeu
+        adicionarDebugLog(`❌ Letra "${input}" errada! ${jogo.tentativas} tentativa(s) restante(s)`);
+
+        // Verificar derrota
         if (jogo.tentativas === 0) {
           jogo.gameOver = true;
-          document.getElementById("mensagem").innerText = `😭 Game Over! Palavra: ${jogo.palavra}`;
+          document.getElementById("mensagem").innerText =
+            `😭 Game Over! Palavra: ${jogo.palavra}`;
           document.getElementById("mensagem").classList.add("derrota");
+          adicionarDebugLog(`💀 DERROTA! Palavra era: ${jogo.palavra}`);
         }
       }
-      
+
       atualizarDisplay();
       document.getElementById("letraInput").value = "";
+      document.getElementById("letraInput").focus();
     }
-    
-    // Permitir chutar com Enter
-    document.getElementById("letraInput").addEventListener("keypress", function(event) {
+
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+
+    document.getElementById("letraInput").addEventListener("keypress", function (event) {
       if (event.key === "Enter") {
         chutar();
       }
     });
-    
-    // Iniciar o jogo ao carregar a página
+
+    // ============================================
+    // INICIALIZAÇÃO
+    // ============================================
+    adicionarDebugLog("🚀 Aplicação iniciada!");
+    adicionarDebugLog("📍 API: " + API_URL);
     novoJogo();
   </script>
 </body>
