@@ -4,20 +4,139 @@
 
 const API_URL = "https://palavroo-api.vercel.app";
 
-// 1️⃣ Pegar UMA palavra aleatória
+// Array de palavras como fallback se a API falhar
+const palavrasLocal = [
+  "JAVASCRIPT",
+  "PROGRAMAÇÃO",
+  "COMPUTADOR",
+  "DESENVOLVEDOR",
+  "ALGORITMO",
+  "FUNÇÃO",
+  "VARIÁVEL",
+  "CONSTANTE",
+  "ARRAY",
+  "OBJETO",
+  "MÉTODO",
+  "CLASSE",
+  "HERANÇA",
+  "BANCO",
+  "DADOS",
+  "SERVIDOR",
+  "CLIENTE",
+  "REQUISIÇÃO",
+  "RESPOSTA",
+  "PROTOCOLO",
+  "INTERNET",
+  "NAVEGADOR",
+  "APLICAÇÃO",
+  "SOFTWARE",
+  "HARDWARE",
+  "REDE",
+  "SEGURANÇA",
+  "CRIPTOGRAFIA",
+  "AUTENTICAÇÃO",
+  "AUTORIZAÇÃO",
+  "SESSÃO",
+  "COOKIE",
+  "TOKEN",
+  "API",
+  "FRAMEWORK",
+  "BIBLIOTECA",
+  "DEPENDÊNCIA",
+  "VERSÃO",
+  "PACKAGE",
+  "MÓDULO",
+  "COMPONENTE",
+  "ESTADO",
+  "PROPS",
+  "EVENTO",
+  "LISTENER",
+  "CALLBACK",
+  "PROMISE",
+  "ASYNC",
+  "AWAIT",
+  "ERROR",
+  "EXCEÇÃO",
+  "DEBUG",
+  "TESTE",
+  "INTEGRAÇÃO",
+  "DEPLOYMENT",
+  "COMMIT",
+  "BRANCH",
+  "MERGE",
+  "CONFLITO",
+  "REPOSITÓRIO",
+  "VERSIONAMENTO",
+  "GIT",
+  "GITHUB",
+  "DOCKER",
+  "CONTAINER",
+  "VIRTUALIZAÇÃO",
+  "CLOUD",
+  "HOSPEDAGEM",
+  "DOMÍNIO",
+  "DNS",
+  "SSL",
+  "CERTIFICADO",
+  "FIREWALL",
+  "PROXY",
+  "GATEWAY",
+  "MIDDLEWARE",
+  "ROTEAMENTO",
+  "PADRÃO",
+  "ARQUITETURA",
+  "DESIGN",
+  "REFATORAÇÃO",
+  "OTIMIZAÇÃO",
+  "PERFORMANCE",
+  "CACHE",
+  "INDEXAÇÃO",
+  "QUERY",
+  "SQL",
+  "NOSQL",
+  "RELACIONAL",
+  "DOCUMENTO",
+  "TRANSAÇÃO",
+  "CONSISTÊNCIA",
+  "DISPONIBILIDADE",
+  "TOLERÂNCIA",
+  "DISTRIBUÍDO"
+];
+
+// 1️⃣ Pegar palavra aleatória - tenta API, senão usa local
 async function pegarPalavraAleatoria() {
   try {
-    const response = await fetch(`${API_URL}/random`);
+    console.log("🔄 Tentando buscar palavra da API Palavroo...");
+    const response = await fetch(`${API_URL}/random`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Erro da API: ${response.status}`);
+    }
+    
     const data = await response.json();
-    console.log("Palavra:", data.palavra);
+    console.log("✅ Palavra da API:", data.palavra);
     return data.palavra.toUpperCase();
   } catch (error) {
-    console.error("Erro ao buscar palavra:", error);
-    return "JAVASCRIPT"; // Fallback
+    console.warn("⚠️ API indisponível, usando palavras locais:", error);
+    // Se a API falhar, pega uma palavra aleatória do array local
+    return pegarPalavraLocal();
   }
 }
 
-// 2️⃣ Pegar TODAS as palavras
+// 2️⃣ Pegar palavra aleatória local
+function pegarPalavraLocal() {
+  const indiceAleatorio = Math.floor(Math.random() * palavrasLocal.length);
+  const palavra = palavrasLocal[indiceAleatorio];
+  console.log("📚 Palavra local:", palavra);
+  return palavra;
+}
+
+// 3️⃣ Pegar TODAS as palavras
 async function pegarTodasPalavras() {
   try {
     const response = await fetch(`${API_URL}/words`);
@@ -26,11 +145,11 @@ async function pegarTodasPalavras() {
     return data;
   } catch (error) {
     console.error("Erro ao buscar palavras:", error);
-    return [];
+    return palavrasLocal;
   }
 }
 
-// 3️⃣ Pegar palavra por dificuldade (se a API suporta)
+// 4️⃣ Pegar palavra por dificuldade (se a API suporta)
 async function pegarPorDificuldade(dificuldade) {
   try {
     const response = await fetch(`${API_URL}/words?difficulty=${dificuldade}`);
@@ -38,11 +157,11 @@ async function pegarPorDificuldade(dificuldade) {
     return data;
   } catch (error) {
     console.error("Erro ao buscar por dificuldade:", error);
-    return [];
+    return palavrasLocal;
   }
 }
 
-// 4️⃣ Iniciar um novo jogo
+// 5️⃣ Iniciar um novo jogo
 async function iniciarJogo() {
   const palavra = await pegarPalavraAleatoria();
   return {
