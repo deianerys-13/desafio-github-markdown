@@ -36,6 +36,7 @@
       color: #667eea;
       margin: 20px 0;
       font-family: monospace;
+      min-height: 50px;
     }
     
     .stats {
@@ -77,17 +78,14 @@
     .letras-erradas {
       margin: 20px 0;
       color: #e74c3c;
-    }
-    
-    .letras-certas {
-      margin: 10px 0;
-      color: #27ae60;
+      min-height: 20px;
     }
     
     .mensagem {
       font-size: 20px;
       font-weight: bold;
       margin: 20px 0;
+      min-height: 30px;
     }
     
     .vitoria {
@@ -112,9 +110,8 @@
       </div>
     </div>
     
-    <div class="palavra-display" id="palavraDisplay">_ _ _ _ _ _</div>
+    <div class="palavra-display" id="palavraDisplay">⏳ Carregando...</div>
     
-    <div class="letras-certas" id="letrasCertas"></div>
     <div class="letras-erradas" id="letrasErradas"></div>
     
     <input type="text" id="letraInput" placeholder="Digite uma letra" maxlength="1">
@@ -141,18 +138,32 @@
     
     // Iniciar novo jogo - chama função do api-palavroo.js
     async function novoJogo() {
-      const palavra = await pegarPalavraAleatoria();
-      jogo = {
-        palavra: palavra,
-        tentativas: 6,
-        letrasErradas: [],
-        letrasAcertadas: [],
-        gameOver: false,
-        venceu: false
-      };
-      atualizarDisplay();
-      document.getElementById("letraInput").value = "";
-      document.getElementById("mensagem").innerText = "";
+      try {
+        console.log("🎮 Iniciando novo jogo...");
+        document.getElementById("palavraDisplay").innerText = "⏳ Carregando palavra...";
+        
+        // Chama a função que busca palavra da API
+        const palavra = await pegarPalavraAleatoria();
+        console.log("✅ Palavra carregada:", palavra);
+        
+        jogo = {
+          palavra: palavra,
+          tentativas: 6,
+          letrasErradas: [],
+          letrasAcertadas: [],
+          gameOver: false,
+          venceu: false
+        };
+        
+        atualizarDisplay();
+        document.getElementById("letraInput").value = "";
+        document.getElementById("letraInput").focus();
+        document.getElementById("mensagem").innerText = "";
+        document.getElementById("mensagem").className = "mensagem";
+      } catch (error) {
+        console.error("❌ Erro ao iniciar jogo:", error);
+        document.getElementById("palavraDisplay").innerText = "Erro ao carregar!";
+      }
     }
     
     // Atualizar display da palavra e estatísticas
@@ -200,6 +211,7 @@
       // Verificar se acertou a letra
       if (jogo.palavra.includes(input)) {
         jogo.letrasAcertadas.push(input);
+        console.log("✅ Letra correta:", input);
         
         // Verificar se venceu (adivinhou todas as letras)
         if (jogo.palavra.split("").every(l => jogo.letrasAcertadas.includes(l))) {
@@ -212,6 +224,7 @@
         // Letra errada
         jogo.letrasErradas.push(input);
         jogo.tentativas--;
+        console.log("❌ Letra errada:", input);
         
         // Verificar se perdeu
         if (jogo.tentativas === 0) {
