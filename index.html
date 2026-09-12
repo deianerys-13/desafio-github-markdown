@@ -366,7 +366,7 @@
         }
 
         const palavra = data.palavra.toUpperCase().trim();
-        adicionarDebugLog(`✅ Palavra obtida da API: "${palavra}"`);
+        adicionarDebugLog(`✅ Palavra obtida da API (${palavra.length} letras)`);
         
         jogo.apiUsada = true;
         return palavra;
@@ -387,7 +387,7 @@
     function pegarPalavraLocal() {
       const indice = Math.floor(Math.random() * palavrasLocal.length);
       const palavra = palavrasLocal[indice];
-      adicionarDebugLog(`📚 Palavra local selecionada: "${palavra}"`);
+      adicionarDebugLog(`📚 Palavra local selecionada (${palavra.length} letras)`);
       return palavra;
     }
 
@@ -421,7 +421,7 @@
           apiUsada: jogo.apiUsada
         };
 
-        adicionarDebugLog(`✅ Jogo pronto! Palavra: ${palavra.length} letras`);
+        adicionarDebugLog(`✅ Jogo pronto! ${palavra.length} letras para descobrir`);
         atualizarDisplay();
         
         document.getElementById("letraInput").value = "";
@@ -511,9 +511,9 @@
         if (jogo.tentativas === 0) {
           jogo.gameOver = true;
           document.getElementById("mensagem").innerText =
-            `😭 Game Over! Palavra: ${jogo.palavra}`;
+            `😭 Game Over! Tente novamente...`;
           document.getElementById("mensagem").classList.add("derrota");
-          adicionarDebugLog(`💀 DERROTA! Palavra era: ${jogo.palavra}`);
+          adicionarDebugLog(`💀 DERROTA! Game Over!`);
         }
       }
 
