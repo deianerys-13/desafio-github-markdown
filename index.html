@@ -2,32 +2,238 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Jogo da Forca</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo de Forca com Palavroo API</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: 0;
+    }
+    
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      text-align: center;
+      max-width: 500px;
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+    }
+    
+    .palavra-display {
+      font-size: 32px;
+      font-weight: bold;
+      letter-spacing: 10px;
+      color: #667eea;
+      margin: 20px 0;
+      font-family: monospace;
+    }
+    
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px 0;
+      color: #666;
+    }
+    
+    .stats-item {
+      padding: 10px;
+    }
+    
+    input[type="text"] {
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+      max-width: 200px;
+      border: 2px solid #667eea;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+    
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 10px;
+    }
+    
+    button:hover {
+      background: #764ba2;
+    }
+    
+    .letras-erradas {
+      margin: 20px 0;
+      color: #e74c3c;
+    }
+    
+    .letras-certas {
+      margin: 10px 0;
+      color: #27ae60;
+    }
+    
+    .mensagem {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+    
+    .vitoria {
+      color: #27ae60;
+    }
+    
+    .derrota {
+      color: #e74c3c;
+    }
+  </style>
 </head>
 <body>
-
   <div class="container">
-    <h1>Jogo da Forca</h1>
-
-    <!-- Exibe os tracinhos da palavra -->
-    <div id="palavra"></div>
-
-    <!-- Campo para digitar uma letra -->
-    <div class="entrada">
-      <input type="text" id="letraInput" maxlength="1" placeholder="Letra">
-      <button id="btnChutar" onclick="chutarLetra()">Chutar</button>
+    <h1>🎮 Jogo de Forca</h1>
+    
+    <div class="stats">
+      <div class="stats-item">
+        Tentativas: <strong id="tentativas">6</strong>
+      </div>
+      <div class="stats-item">
+        Acertos: <strong id="acertos">0</strong>
+      </div>
     </div>
-
-    <!-- Avisos e status -->
-    <p id="mensagem"></p>
-    <p>Tentativas restantes: <span id="tentativas">6</span></p>
-    <p>Letras tentadas: <span id="letrasUsadas"></span></p>
-
-    <!-- Botao de reiniciar -->
-    <button id="btnReiniciar" onclick="iniciarJogo()">Jogar Novamente</button>
+    
+    <div class="palavra-display" id="palavraDisplay">_ _ _ _ _ _</div>
+    
+    <div class="letras-certas" id="letrasCertas"></div>
+    <div class="letras-erradas" id="letrasErradas"></div>
+    
+    <input type="text" id="letraInput" placeholder="Digite uma letra" maxlength="1">
+    <button onclick="chutar()">Chutar</button>
+    
+    <div class="mensagem" id="mensagem"></div>
+    
+    <button onclick="novoJogo()" style="background: #27ae60;">Novo Jogo</button>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    const API_URL = "https://palavroo-api.vercel.app";
+    
+    let jogo = {
+      palavra: "",
+      tentativas: 6,
+      letrasErradas: [],
+      letrasAcertadas: [],
+      gameOver: false,
+      venceu: false
+    };
+    
+    async function pegarPalavraAleatoria() {
+      try {
+        document.getElementById("palavraDisplay").innerText = "⏳ Carregando...";
+        const response = await fetch(`${API_URL}/random`);
+        const data = await response.json();
+        return data.palavra.toUpperCase();
+      } catch (error) {
+        console.error("Erro ao buscar palavra:", error);
+        return "JAVASCRIPT";
+      }
+    }
+    
+    async function novoJogo() {
+      const palavra = await pegarPalavraAleatoria();
+      jogo = {
+        palavra: palavra,
+        tentativas: 6,
+        letrasErradas: [],
+        letrasAcertadas: [],
+        gameOver: false,
+        venceu: false
+      };
+      atualizarDisplay();
+      document.getElementById("letraInput").value = "";
+      document.getElementById("mensagem").innerText = "";
+    }
+    
+    function atualizarDisplay() {
+      let display = "";
+      for (let letra of jogo.palavra) {
+        if (jogo.letrasAcertadas.includes(letra)) {
+          display += letra + " ";
+        } else {
+          display += "_ ";
+        }
+      }
+      document.getElementById("palavraDisplay").innerText = display;
+      document.getElementById("tentativas").innerText = jogo.tentativas;
+      document.getElementById("acertos").innerText = jogo.letrasAcertadas.length;
+      document.getElementById("letrasErradas").innerText = 
+        jogo.letrasErradas.length > 0 ? "❌ Erradas: " + jogo.letrasErradas.join(", ") : "";
+    }
+    
+    function chutar() {
+      const input = document.getElementById("letraInput").value.toUpperCase();
+      
+      if (!input) {
+        alert("Digite uma letra!");
+        return;
+      }
+      
+      if (input.length !== 1) {
+        alert("Digite apenas UMA letra!");
+        return;
+      }
+      
+      if (jogo.letrasAcertadas.includes(input) || jogo.letrasErradas.includes(input)) {
+        alert("Você já tentou essa letra!");
+        return;
+      }
+      
+      if (jogo.gameOver) {
+        alert("Jogo acabou! Clique em 'Novo Jogo'");
+        return;
+      }
+      
+      if (jogo.palavra.includes(input)) {
+        jogo.letrasAcertadas.push(input);
+        
+        if (jogo.palavra.split("").every(l => jogo.letrasAcertadas.includes(l))) {
+          jogo.venceu = true;
+          jogo.gameOver = true;
+          document.getElementById("mensagem").innerText = "🎉 Você Venceu!";
+          document.getElementById("mensagem").classList.add("vitoria");
+        }
+      } else {
+        jogo.letrasErradas.push(input);
+        jogo.tentativas--;
+        
+        if (jogo.tentativas === 0) {
+          jogo.gameOver = true;
+          document.getElementById("mensagem").innerText = `😭 Game Over! Palavra: ${jogo.palavra}`;
+          document.getElementById("mensagem").classList.add("derrota");
+        }
+      }
+      
+      atualizarDisplay();
+      document.getElementById("letraInput").value = "";
+    }
+    
+    document.getElementById("letraInput").addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        chutar();
+      }
+    });
+    
+    novoJogo();
+  </script>
 </body>
 </html>
